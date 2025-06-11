@@ -1,4 +1,4 @@
-import cheerio, { CheerioAPI, Element } from 'cheerio'
+import cheerio, { CheerioAPI } from 'cheerio'
 import { PluginOption } from 'vite'
 
 const createQiankunHelper = (qiankunName: string) => `
@@ -54,7 +54,7 @@ const htmlPlugin: PluginFn = (qiankunName, microOption = {}) => {
   let isProduction: boolean
   let base = ''
 
-  const module2DynamicImport = ($: CheerioAPI, scriptTag: Element) => {
+  const module2DynamicImport = ($: CheerioAPI, scriptTag: any) => {
     if (!scriptTag) {
       return
     }
@@ -65,7 +65,7 @@ const htmlPlugin: PluginFn = (qiankunName, microOption = {}) => {
       appendBase = '(window.proxy ? (window.proxy.__INJECTED_PUBLIC_PATH_BY_QIANKUN__ + \'..\') : \'\') + '
     }
     script$.removeAttr('src')
-    script$.removeAttr('type')
+    // script$.removeAttr('type')
     script$.html(`import(${appendBase}'${moduleSrc}')`)
     return script$
   }
@@ -79,7 +79,7 @@ const htmlPlugin: PluginFn = (qiankunName, microOption = {}) => {
 
     configureServer (server) {
       return () => {
-        server.middlewares.use((req, res, next) => {
+        server.middlewares.use((req, res:any, next) => {
           if (isProduction || !microOption.useDevMode) {
             next()
             return
